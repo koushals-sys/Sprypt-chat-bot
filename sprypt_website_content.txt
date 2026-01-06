@@ -1,0 +1,121 @@
+# SPRY Physical Therapy Software - Website Information
+
+## About SPRY
+SPRY is the #1 rated software for PT, OT, and SLP providers. It is an AI-powered all-in-one solution that improves clinic effectiveness, patient experience and financial performance.
+
+## Key Statistics and Results
+- 500+ rehabilitation clinics using SPRY nationwide
+- 35+ states served and growing
+- 4.8/5.0 rating across G2 and Capterra
+- 98% reimbursement rate
+- 95% clean claim rate
+- 70% time reduction on documentation
+- 30% drop in no-shows
+- 60% reduction in admin work
+- 40% fewer claim denials
+- 30% faster reimbursements
+- 20% increase in patient reactivation
+- 98% message delivery rate
+
+## Core Product: SPRY 360
+
+SPRY 360 is an integrated platform with five main functional areas:
+
+### 1. Patient Intake & Scheduling
+- Digital intake forms and kiosk check-in
+- Online scheduling with waitlist management
+- Mobile patient portal with GPS-verified check-ins
+- Saves 20+ minutes per patient processing time
+- Reduces no-shows by 30%
+
+### 2. AI-Powered Documentation
+- SOAP note automation (native and adaptive)
+- Templates, macros, and auto-populated prior notes
+- 55+ specialty workflows via mobile app
+- AI Medical Scribe for documentation
+- Reduces documentation time by 70%
+- Significantly reduces clinical documentation burden
+
+### 3. Billing & Revenue Cycle Management
+- Real-time eligibility verification
+- Automated claim scrubbing and invoicing
+- Compliance alerts integrated into workflows
+- Manual paper claim support and exception handling
+- 95% clean claim rate
+- 98% reimbursement rate
+- 40% fewer claim denials
+- 30% faster reimbursements
+
+### 4. Patient Engagement Tools
+- Text messaging and appointment reminders
+- Post-visit surveys
+- Home exercise programs with patient access
+- Reactivation triggers for inactive patients
+- 98% message delivery rate
+- 20% increase in patient reactivation
+
+### 5. Analytics & Business Intelligence
+- Revenue and denial dashboards
+- Therapist productivity reporting
+- MIPS reporting capabilities
+- Audit-ready compliance infrastructure
+
+## Specialized AI Features
+SPRY includes advanced AI-powered features:
+- Prior Authorization automation
+- AI Fax processing
+- AI Medical Scribe for documentation
+- Scheduling Agent for appointment management
+
+## Industry Specializations
+SPRY serves multiple rehabilitation therapy types:
+- Physical Therapy (PT)
+- Occupational Therapy (OT)
+- Speech-Language Pathology (SLP)
+- Chiropractic care
+- Pediatric therapy
+- Behavioral health
+
+## Integration Ecosystem
+SPRY connects with multiple platforms including:
+- Zoho CRM
+- Stripe
+- Twilio
+- PhysioTrack
+- Mailchimp
+- Square
+- ZocDoc
+- And many others
+
+## Services Offered
+- White-glove onboarding
+- Seamless data migration
+- Revenue cycle management services
+- Credentialing support
+- 5-star rated customer helpdesk
+- Dedicated support team
+
+## Customer Success Examples
+Featured case studies highlight:
+- "From Claim Chaos To Clean Claims" - BEST Physical Therapy improved claim submission accuracy
+- Zero-downtime migration success - OC Sports and Rehab transitioned smoothly
+- "$50K Revenue Boost In A Year" - Excel Therapy increased revenue significantly
+
+## Compliance & Security
+SPRY maintains industry-leading security standards:
+- HIPAA certified
+- HL7/FHIR compliant infrastructure
+- SOC 2 Type II compliance
+- Audit-ready compliance infrastructure
+
+## Key Advantages
+- All-in-one solution (no need for multiple software)
+- AI-powered automation reduces manual work
+- Proven ROI with measurable results
+- High customer satisfaction (4.8/5.0 rating)
+- Comprehensive support and onboarding
+- Mobile-first approach
+- Real-time data and analytics
+
+## Pricing & Access
+Custom pricing available based on clinic needs. Demo booking available through the website.
