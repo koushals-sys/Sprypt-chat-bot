@@ -4,15 +4,14 @@ services:
     name: sprypt-chatbot-api
     runtime: python
     plan: free
-    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
-    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    region: oregon
+    buildCommand: pip install --upgrade pip setuptools wheel && pip install --no-cache-dir -r requirements-render.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT --timeout-keep-alive 120
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.18
       - key: OPENAI_API_KEY
         sync: false
-      - key: PORT
-        value: 10000
     healthCheckPath: /health
 
   # Streamlit Frontend
@@ -20,12 +19,11 @@ services:
     name: sprypt-chatbot-frontend
     runtime: python
     plan: free
-    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
-    startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
+    region: oregon
+    buildCommand: pip install --upgrade pip setuptools wheel && pip install --no-cache-dir -r requirements-render.txt
+    startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true --server.enableCORS false
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.18
       - key: OPENAI_API_KEY
         sync: false
-      - key: PORT
-        value: 10000
