@@ -1,29 +1,40 @@
 # Core dependencies
-streamlit>=1.29.0
-langchain>=0.1.0
-langchain-openai>=0.1.0
-langchain-community>=0.0.10
-openai>=1.12.0
+streamlit==1.29.0
+langchain==0.3.27
+langchain-openai==0.3.35
+langchain-community==0.3.31
+langchain-text-splitters==0.3.11
+langchain-core==0.3.80
+openai==2.13.0
 
-# Vector store
-chromadb>=0.4.22
+# Vector store (using compatible version)
+chromadb==0.4.22
+chroma-hnswlib==0.7.3
 
 # Data processing
-pandas>=2.1.0
+pandas==2.1.4
+numpy==1.26.4
 
 # Environment variables
-python-dotenv>=1.0.0
+python-dotenv==1.0.0
 
 # Text processing and embeddings
-tiktoken>=0.5.0
+tiktoken==0.12.0
 
 # Additional utilities
-pypdf>=3.17.0
+pypdf==3.17.4
 
 # Web scraping for fallback content
-beautifulsoup4>=4.12.0
-requests>=2.31.0
+beautifulsoup4==4.12.0
+requests==2.32.5
 
 # FastAPI backend
-fastapi>=0.104.0
-uvicorn>=0.24.0
+fastapi==0.124.4
+uvicorn==0.38.0
+pydantic==2.12.5
+pydantic-core==2.41.5
+
+# Additional required dependencies
+typing-extensions==4.15.0
+SQLAlchemy==2.0.45
+aiohttp==3.13.2
