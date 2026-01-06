@@ -2,10 +2,12 @@ services:
   # FastAPI Backend
   - type: web
     name: sprypt-chatbot-api
-    env: python
+    runtime: python
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.18
       - key: OPENAI_API_KEY
         sync: false
     healthCheckPath: /health
@@ -13,9 +15,11 @@ services:
   # Streamlit Frontend
   - type: web
     name: sprypt-chatbot-frontend
-    env: python
+    runtime: python
     buildCommand: pip install -r requirements.txt
     startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.18
       - key: OPENAI_API_KEY
         sync: false
