@@ -3,9 +3,10 @@ import pandas as pd
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import Chroma
-from langchain.chains import RetrievalQA
+from langchain.chains import ConversationalRetrievalChain
 from langchain.prompts import PromptTemplate
 from langchain.schema import Document
+from langchain.memory import ConversationBufferMemory
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -150,14 +151,14 @@ def load_vector_store(persist_directory="./chroma_db"):
 
 def create_retrieval_chain(vectorstore, temperature=0.7):
     """
-    Create a retrieval chain that answers questions based on the vector store.
+    Create a conversational retrieval chain that maintains chat history.
 
     Args:
         vectorstore: ChromaDB vector store
         temperature (float): Temperature for the LLM (0.7 = more natural/conversational)
 
     Returns:
-        RetrievalQA: Question-answering chain
+        ConversationalRetrievalChain: Conversational question-answering chain
     """
     # Initialize the LLM with higher temperature for more natural, conversational responses
     llm = ChatOpenAI(
@@ -165,11 +166,12 @@ def create_retrieval_chain(vectorstore, temperature=0.7):
         temperature=temperature
     )
 
-    # Define the system prompt
+    # Define the system prompt for combining docs
     template = """You are a friendly Sprypt chatbot assistant. Chat naturally with users like a helpful colleague would - be warm, conversational, and personable.
 
 CONVERSATION STYLE:
 - For greetings (hi, hello, hey): Respond warmly and briefly, then ask how you can help. Example: "Hi there! 👋 I'm here to help you learn about Sprypt. What would you like to know?"
+- For follow-up questions: Use the chat history to understand context and provide relevant answers
 - For casual questions: Keep responses natural and conversational, not overly formal
 - For simple questions: Give concise, clear answers (2-3 sentences)
 - For complex questions: Provide detailed explanations with specific information
@@ -183,11 +185,17 @@ The context includes information from:
 
 CRITICAL RULES:
 1. Answer ONLY using the information from the provided context below
-2. Prioritize information from FAQ documents when available
-3. Use website content to supplement or provide general information when FAQ doesn't have the answer
-4. If the answer is not in ANY of the provided context, respond naturally: "Hmm, I don't have that information in my knowledge base right now. But I can direct you to our support team who can help! Check out: https://help.sprypt.com/"
-5. Do NOT make up information or hallucinate facts
-6. Do NOT use external knowledge - stick to the context only
+2. Use the chat history to understand what the user is referring to
+3. If the context has SPECIFIC information that DIRECTLY answers the question, provide it
+4. If the context has VAGUE or TANGENTIALLY related info but NOT a direct answer, say you don't know
+5. Do NOT give vague or partially related answers - be honest when you don't know
+6. If the answer is not clearly in the context, respond: "I don't have that specific information right now. For help, you can:
+   - Email our support team: support@spryhealth.care
+   - Book a demo: https://www.sprypt.com/demo
+   - Visit our help center: https://help.sprypt.com/"
+7. Do NOT make up information or hallucinate facts
+8. Do NOT provide tangentially related information as if it's the answer
+9. Do NOT use external knowledge - stick to the context only
 
 ANSWER GUIDELINES:
 1. Match your response length to the question type:
@@ -202,8 +210,9 @@ ANSWER GUIDELINES:
 
 SPECIAL RESPONSES:
 - If someone asks about booking/scheduling a demo: "I'd love to help you see Sprypt in action! You can book a demo here: https://www.sprypt.com/demo"
-- If someone needs technical support: "For technical questions, our support team has you covered: https://help.sprypt.com/"
+- If someone needs technical support or contact info: "For assistance, you can email our support team at support@spryhealth.care or visit: https://help.sprypt.com/"
 - For "thank you": Respond warmly like "You're welcome! Happy to help! Let me know if you have any other questions."
+- If you don't have the specific information they need, always provide the support email (support@spryhealth.care) and demo link
 
 Context: {context}
 
@@ -216,16 +225,16 @@ Answer naturally:"""
         input_variables=["context", "question"]
     )
 
-    # Create the retrieval chain with more documents to include both FAQ and website content
-    qa_chain = RetrievalQA.from_chain_type(
+    # Create the conversational retrieval chain
+    qa_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
-        chain_type="stuff",
         retriever=vectorstore.as_retriever(
             search_type="similarity",
             search_kwargs={"k": 5}  # Retrieve more docs to include both FAQ and website
         ),
         return_source_documents=True,
-        chain_type_kwargs={"prompt": PROMPT}
+        combine_docs_chain_kwargs={"prompt": PROMPT},
+        verbose=False
     )
 
     return qa_chain
@@ -298,21 +307,29 @@ def initialize_chatbot(csv_paths=None,
     return qa_chain
 
 
-def ask_question(qa_chain, question):
+def ask_question(qa_chain, question, chat_history=None):
     """
-    Ask a question to the chatbot and get an answer.
+    Ask a question to the chatbot and get an answer with conversation history.
 
     Args:
-        qa_chain: Question-answering chain
+        qa_chain: Conversational question-answering chain
         question (str): User's question
+        chat_history (list): List of tuples containing (human_message, ai_message)
 
     Returns:
         dict: Dictionary containing the answer and source documents
     """
-    result = qa_chain({"query": question})
+    if chat_history is None:
+        chat_history = []
+
+    result = qa_chain({
+        "question": question,
+        "chat_history": chat_history
+    })
+
     return {
-        "answer": result["result"],
-        "source_documents": result["source_documents"]
+        "answer": result["answer"],
+        "source_documents": result.get("source_documents", [])
     }
 
 

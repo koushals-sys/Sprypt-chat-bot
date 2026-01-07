@@ -15,10 +15,15 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Enable CORS for localhost:3000
+# Enable CORS for frontend URLs
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Frontend URL
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:8501",  # Local Streamlit
+        "https://*.streamlit.app",  # Streamlit Cloud
+        "*"  # Allow all for testing (restrict in production)
+    ],
     allow_credentials=True,
     allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
@@ -31,11 +36,13 @@ qa_chain = None
 # Request model
 class ChatRequest(BaseModel):
     question: str
+    chat_history: list = []  # List of [human_msg, ai_msg] pairs
 
     class Config:
         json_schema_extra = {
             "example": {
-                "question": "What is Sprypt?"
+                "question": "What is Sprypt?",
+                "chat_history": []
             }
         }
 
@@ -44,12 +51,14 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     answer: str
     sources: list = []
+    chat_history: list = []  # Return updated chat history
 
     class Config:
         json_schema_extra = {
             "example": {
                 "answer": "Sprypt is a company that...",
-                "sources": ["Source 1: ...", "Source 2: ..."]
+                "sources": ["Source 1: ...", "Source 2: ..."],
+                "chat_history": [["What is Sprypt?", "Sprypt is a company that..."]]
             }
         }
 
@@ -117,8 +126,11 @@ async def chat(request: ChatRequest):
         )
 
     try:
-        # Get answer from chatbot
-        response = ask_question(qa_chain, request.question)
+        # Convert chat_history from list of lists to list of tuples for LangChain
+        chat_history_tuples = [tuple(pair) for pair in request.chat_history]
+
+        # Get answer from chatbot with conversation history
+        response = ask_question(qa_chain, request.question, chat_history_tuples)
 
         # Extract source documents
         sources = []
@@ -127,9 +139,13 @@ async def chat(request: ChatRequest):
                 source_text = doc.page_content[:200] + "..." if len(doc.page_content) > 200 else doc.page_content
                 sources.append(f"Source {i}: {source_text}")
 
+        # Update chat history with the new question and answer
+        updated_chat_history = request.chat_history + [[request.question, response["answer"]]]
+
         return ChatResponse(
             answer=response["answer"],
-            sources=sources
+            sources=sources,
+            chat_history=updated_chat_history
         )
 
     except Exception as e:

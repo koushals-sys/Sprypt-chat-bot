@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import json
 
-# Backend API URL
+# Backend API URL - Production
 API_URL = "https://sprypt-chatbot-api.onrender.com/api/chat"
 
 # Set page configuration
@@ -15,6 +15,9 @@ st.set_page_config(
 # Initialize session state variables
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
 # Sidebar configuration
 st.sidebar.title("⚙️ Configuration")
@@ -42,6 +45,7 @@ st.sidebar.markdown("---")
 # Clear chat button
 if st.sidebar.button("🗑️ Clear Chat History"):
     st.session_state.messages = []
+    st.session_state.chat_history = []
     st.rerun()
 
 # Main chat interface
@@ -75,10 +79,13 @@ if prompt := st.chat_input("Type your question here..."):
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
             try:
-                # Call backend API
+                # Call backend API with conversation history
                 response = requests.post(
                     API_URL,
-                    json={"question": prompt},
+                    json={
+                        "question": prompt,
+                        "chat_history": st.session_state.chat_history
+                    },
                     timeout=120  # 2 minute timeout
                 )
 
@@ -86,6 +93,7 @@ if prompt := st.chat_input("Type your question here..."):
                     data = response.json()
                     answer = data.get("answer", "Sorry, I couldn't generate a response.")
                     sources = data.get("sources", [])
+                    updated_chat_history = data.get("chat_history", [])
 
                     # Display the answer
                     st.markdown(answer)
@@ -104,6 +112,9 @@ if prompt := st.chat_input("Type your question here..."):
                         "content": answer,
                         "sources": sources
                     })
+
+                    # Update conversation history
+                    st.session_state.chat_history = updated_chat_history
                 else:
                     error_message = f"❌ API Error: {response.status_code} - {response.text}"
                     st.error(error_message)
